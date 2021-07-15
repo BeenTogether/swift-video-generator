@@ -57,7 +57,8 @@ public class VideoGenerator: NSObject {
   
   /// public property to set a width to which to resize the images for multiple video generation. Default value is 800
   public static var videoImageWidthForMultipleVideoGeneration = 800
-  
+    public static var videoImageHeightForMultipleVideoGeneration = 800
+
   /// public property to set the video duration when there is no audio
   public static var videoDurationInSeconds: Double = 0 {
     didSet {
@@ -616,7 +617,7 @@ public class VideoGenerator: NSObject {
       
       for _image in _images {
         autoreleasepool {
-          if let imageData = _image.scaleImageToSize(newSize: CGSize(width: VideoGenerator.videoImageWidthForMultipleVideoGeneration, height: VideoGenerator.videoImageWidthForMultipleVideoGeneration))?.pngData() {
+          if let imageData = _image.scaleImageToSize(newSize: CGSize(width: VideoGenerator.videoImageWidthForMultipleVideoGeneration, height: VideoGenerator.videoImageHeightForMultipleVideoGeneration))?.pngData() {
             datasImages.append(imageData)
           }
         }
