@@ -159,7 +159,7 @@ public class VideoGenerator: NSObject {
             /// start video generation on a separate queue
             videoWriterInput.requestMediaDataWhenReady(on: media_queue, using: { () -> Void in
               
-              let finishFrame: UIImage?
+              var finishFrame: UIImage?
               if (VideoGenerator.current.type == .singleAudioMultipleImage) && useFinishFrame && (finishDuration != 0) {
                 finishFrame = VideoGenerator.current.images.removeLast() //VideoGenerator.current.images[VideoGenerator.current.images.endIndex]
               }
