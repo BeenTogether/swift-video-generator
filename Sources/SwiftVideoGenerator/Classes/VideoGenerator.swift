@@ -171,7 +171,6 @@ public class VideoGenerator: NSObject {
               
               /// calculate the frame duration by dividing the full video duration by the number of images and rounding up the number
               let frameDuration = CMTime(seconds: ceil(Double(VideoGenerator.current.duration / Double(VideoGenerator.current.images.count))), preferredTimescale: 1)
-              let currentProgress = Progress(totalUnitCount: Int64(VideoGenerator.current.images.count))
               
               /// declare a temporary array to hold all as of yet unused images
               var remainingPhotos = [UIImage](VideoGenerator.current.images)
@@ -181,15 +180,20 @@ public class VideoGenerator: NSObject {
               
               // 필요한 영상 프레임수를 새로 계산한다.
               var expectedFrames = numImages
+              var finishFrames = 0
               if repeatFrame && VideoGenerator.current.type == .singleAudioMultipleImage {
                 let audio_Time = VideoGenerator.current.audioDurations[0]
                 if useFinishFrame {
-                    expectedFrames = Int((audio_Time - finishDuration) / _frameDuration) + 1
-                } else {
+//                    expectedFrames = Int((audio_Time - finishDuration) / _frameDuration) + 1
+                    expectedFrames = Int(audio_Time / _frameDuration)
+                    finishFrames = Int(finishDuration / _frameDuration)
+                  } else {
                     expectedFrames = Int(audio_Time / _frameDuration)
                 }
               }
-            
+              
+              let currentProgress = Progress(totalUnitCount: Int64(expectedFrames))
+
               /// if the input writer is ready and we have not yet used all imaged
               while (videoWriterInput.isReadyForMoreMediaData && frameCount < expectedFrames/*numImages*/) {
                 
@@ -212,7 +216,7 @@ public class VideoGenerator: NSObject {
                   } else {
                     /// get the right photo from the array
                     if repeatFrame {
-                        if useFinishFrame && (frameCount == (expectedFrames - 1)) {
+                        if useFinishFrame && (frameCount >= (expectedFrames - finishFrames)) {
                             if let frame = finishFrame {
                                 imageForVideo = frame
                             } else {
@@ -228,11 +232,12 @@ public class VideoGenerator: NSObject {
                     nextStartTimeForFrame = frameCount == 0 ? CMTime(seconds: 0, preferredTimescale: 600) : CMTime(seconds: Double(elapsedTime), preferredTimescale: 600)
                     
                     if repeatFrame {
-                        if useFinishFrame && (frameCount == (expectedFrames - 1)) {
-                            elapsedTime += finishDuration
-                        } else {
-                            elapsedTime += _frameDuration
-                        }
+//                        if useFinishFrame && (frameCount == (expectedFrames - 1)) {
+//                            elapsedTime += finishDuration
+//                        } else {
+//                            elapsedTime += _frameDuration
+//                        }
+                        elapsedTime += _frameDuration
                     } else {
                         let audio_Time = VideoGenerator.current.audioDurations[0]
                         let total_Images = VideoGenerator.current.images.count
